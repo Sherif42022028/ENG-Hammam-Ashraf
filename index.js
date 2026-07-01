@@ -304,4 +304,148 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 1500);
         });
     }
+
+    /* ==========================================================================
+       SMART LOADER SCREEN
+       ========================================================================== */
+    const loader = document.getElementById('loader');
+    const hideLoader = () => {
+        if (loader && !loader.classList.contains('fade-out')) {
+            loader.classList.add('fade-out');
+        }
+    };
+    
+    // Auto hide loader after maximum of 1.2s to prevent artificial wait
+    const loaderTimeout = setTimeout(hideLoader, 1200);
+    
+    // Hide immediately on window load if it loads faster than 1.2s
+    window.addEventListener('load', () => {
+        clearTimeout(loaderTimeout);
+        hideLoader();
+    });
+
+    // Safeguard loader fade out even if DOMContentLoaded / Load has issues
+    setTimeout(hideLoader, 2000);
+
+    /* ==========================================================================
+       THEME TOGGLE (LIGHT / DARK MODE) WITH STORAGE
+       ========================================================================== */
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        const icon = themeToggle.querySelector('i');
+        
+        // Retrieve cached theme or default to dark
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        if (currentTheme === 'light') {
+            document.body.classList.add('light-theme');
+            if (icon) {
+                icon.className = 'fa-solid fa-sun';
+            }
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            const isLight = document.body.classList.contains('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            
+            if (icon) {
+                icon.className = isLight ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            }
+        });
+    }
+
+    /* ==========================================================================
+       BACKGROUND PARALLAX EFFECT (0.08 SPEED)
+       ========================================================================== */
+    const parallaxBg = document.getElementById('parallax-bg');
+    if (parallaxBg) {
+        window.addEventListener('scroll', () => {
+            // Respect prefers-reduced-motion settings
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                parallaxBg.style.transform = 'translateY(0)';
+                return;
+            }
+            const scrolled = window.scrollY;
+            parallaxBg.style.transform = `translateY(${scrolled * 0.08}px)`;
+        });
+    }
+
+    /* ==========================================================================
+       CUSTOM CURSOR DOT & OUTLINE (FINE POINTERS ONLY)
+       ========================================================================== */
+    const cursorDot = document.getElementById('cursor-dot');
+    const cursorOutline = document.getElementById('cursor-outline');
+    
+    if (cursorDot && cursorOutline) {
+        // Only run on desktop/fine pointers (coarse pointers are touchscreen devices) and screen width > 992px
+        if (window.matchMedia('(pointer: fine)').matches && window.innerWidth > 992) {
+            
+            // Add custom cursor class only after the first mouse movement
+            const handleFirstMouseMove = () => {
+                document.body.classList.add('has-custom-cursor');
+                window.removeEventListener('mousemove', handleFirstMouseMove);
+            };
+            window.addEventListener('mousemove', handleFirstMouseMove);
+            
+            window.addEventListener('mousemove', (e) => {
+                // Respect prefers-reduced-motion settings
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    return;
+                }
+                const posX = e.clientX;
+                const posY = e.clientY;
+                
+                cursorDot.style.left = `${posX}px`;
+                cursorDot.style.top = `${posY}px`;
+                cursorOutline.style.left = `${posX}px`;
+                cursorOutline.style.top = `${posY}px`;
+            });
+            
+            // Mouse hover over interactives morphs outline to gold ring
+            const interactives = document.querySelectorAll('a, button, .cert-card, .matcher-tab, input, textarea, [role="button"]');
+            interactives.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursorDot.classList.add('hovered');
+                    cursorOutline.classList.add('hovered');
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursorDot.classList.remove('hovered');
+                    cursorOutline.classList.remove('hovered');
+                });
+            });
+        }
+    }
+
+    /* ==========================================================================
+       GOLDEN RIPPLE CLICK EFFECT ON BUTTONS
+       ========================================================================== */
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            // Respect prefers-reduced-motion settings
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+            
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('span');
+            ripple.className = 'ripple';
+            ripple.style.left = `${x}px`;
+            ripple.style.top = `${y}px`;
+            
+            const existingRipple = this.querySelector('.ripple');
+            if (existingRipple) {
+                existingRipple.remove();
+            }
+            
+            this.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 600);
+        });
+    });
 });

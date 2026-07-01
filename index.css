@@ -525,8 +525,22 @@ img {
         font-family: 'Noto Kufi Arabic', sans-serif;
         font-size: 1.1rem;
         color: var(--gold);
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.75rem; /* Reduced to leave space for ornament */
         letter-spacing: 0.05em;
+    }
+
+    .hero-bismillah-divider {
+        display: flex;
+        justify-content: flex-start;
+        margin-top: -0.25rem;
+        margin-bottom: 1.5rem;
+        color: var(--gold);
+        opacity: 0.65;
+    }
+
+    .bismillah-ornament {
+        width: 18px;
+        height: 18px;
     }
 
     .hero-name {
@@ -1626,6 +1640,10 @@ img {
     
     .hero-content {
         text-align: center;
+    }
+    
+    .hero-bismillah-divider {
+        justify-content: center;
     }
     
     .hero-actions {
